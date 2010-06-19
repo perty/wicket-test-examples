@@ -1,0 +1,76 @@
+<html
+	xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+<title>Drop Down Page</title>
+</head>
+<body>
+<div style="width: 512px">
+<h1>Drop Down Page</h1>
+<p>A drop down control is handy when you wish to select one out of
+many and there is not enough room for a radio group.</p>
+<form action="#" wicket:id="form">
+<fieldset><legend>Drop Down Testing</legend><select
+	wicket:id="dropDown">
+	<option>[Dummy 1]</option>
+	<option>[Dummy 2]</option>
+</select><br />
+<input type="submit" /></fieldset>
+</form>
+<p>Message: <span wicket:id="message">[Message]</span></p>
+<h2>The Code</h2>
+<p>The code for testing a drop down is very similar to that of a
+check box. But first a look at the implementation.</p>
+<p>There is no <tt>AjaxDropDownChoice</tt>, instead you have to <b>add</b>
+an <tt>AjaxFormComponentUpdatingBehavior</tt> to the control and
+implement the behavior in the <tt>onUpdate</tt> method.</p>
+<pre>
+   public class DropDownForm extends Form&lt;DropDownFormObject&gt; {
+
+        private static final long serialVersionUID = 1L;
+
+        public DropDownForm(String id) {
+            super(id);
+            DropDownFormObject model = new DropDownFormObject();
+            setDefaultModel(new CompoundPropertyModel&lt;DropDownFormObject&gt;(model));
+            DropDownChoice&lt;String&gt; dropDownChoice = new DropDownChoice&lt;String&gt;(DROPDOWN, Arrays.asList(choices));
+            dropDownChoice.add(createAjaxBehavior());
+            add(dropDownChoice);
+        }
+
+        private AjaxFormComponentUpdatingBehavior createAjaxBehavior() {
+            AjaxFormComponentUpdatingBehavior updatingBehavior = new AjaxFormComponentUpdatingBehavior(ONCHANGE_EVENT) {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    DropDownFormObject modelObject = (DropDownFormObject) getDefaultModelObject();
+                    log.debug(String.format("Got a change: %s", modelObject.toString()));
+                    label.setDefaultModelObject(modelObject.toString());
+                    ajaxUpdate(target, label);
+                }
+            };
+            return updatingBehavior;
+        }
+
+        @Override
+        protected void onSubmit() {
+            log.debug("onSubmit: " + getDefaultModelObjectAsString());
+            setResponsePage(RadioGroupPage.class);
+        }
+    }
+</pre>
+<p>Since we decide the string ourselves the <tt>ONCHANGE_EVENT</tt>
+is a constant that we can use in our tests.</p>
+<p>Here is the slightly different form filling method of our test
+class.</p>
+<pre>
+    private FormTester fillInTheForm() {
+        FormTester formTester = tester.newFormTester(DropDownPage.FORM);
+        formTester.select(DropDownPage.DROPDOWN, 0);
+        tester.executeAjaxEvent(DropDownPage.FORM + ":" + DropDownPage.DROPDOWN, DropDownPage.ONCHANGE_EVENT);
+        return formTester;
+    }
+</pre></div>
+</body>
+</html>
