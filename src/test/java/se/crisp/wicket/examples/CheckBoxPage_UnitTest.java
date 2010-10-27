@@ -82,8 +82,8 @@ public class CheckBoxPage_UnitTest {
     }
 
     private String getTheResult() {
+    	tester.assertComponent(CheckBoxPage.MESSAGE, Label.class);
         CheckBoxPage page = (CheckBoxPage) tester.getLastRenderedPage();
-        tester.assertComponent(CheckBoxPage.MESSAGE, Label.class);
         Label label = (Label) page.get(CheckBoxPage.MESSAGE);
         String actualMessage = label.getDefaultModelObjectAsString();
         return actualMessage;
