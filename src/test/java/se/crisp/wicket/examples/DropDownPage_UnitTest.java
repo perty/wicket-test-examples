@@ -22,6 +22,7 @@ class DropDownPageAjaxOverride extends DropDownPage {
 
     @Override
     protected void ajaxUpdate(AjaxRequestTarget target, Component comp) {
+    	super.ajaxUpdate(target, comp);
         ajaxCalled++;
         String failMessage = String.format("You forgot to call setMarkupId(true) on '%s'", comp.getId());
         assertNotNull(failMessage, comp.getMarkupId(false));
