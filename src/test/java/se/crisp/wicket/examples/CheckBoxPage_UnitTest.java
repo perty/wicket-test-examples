@@ -22,6 +22,7 @@ class CheckBoxPageAjaxOverride extends CheckBoxPage implements Serializable {
 
     @Override
     protected void ajaxUpdate(AjaxRequestTarget target, Component comp) {
+    	super.ajaxUpdate(target, comp);
         ajaxCalled++;
         String failMessage = String.format("You forgot to call setMarkupId(true) on '%s'", comp.getId());
         assertNotNull(failMessage, comp.getMarkupId(false));
@@ -81,8 +82,8 @@ public class CheckBoxPage_UnitTest {
     }
 
     private String getTheResult() {
+    	tester.assertComponent(CheckBoxPage.MESSAGE, Label.class);
         CheckBoxPage page = (CheckBoxPage) tester.getLastRenderedPage();
-        tester.assertComponent(CheckBoxPage.MESSAGE, Label.class);
         Label label = (Label) page.get(CheckBoxPage.MESSAGE);
         String actualMessage = label.getDefaultModelObjectAsString();
         return actualMessage;
