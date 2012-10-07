@@ -10,6 +10,9 @@ body { margin:0;padding:0;}
 	border-bottom : 4px solid #EE3C0C;
 	z-index : 0;
 }
+#hd img {
+    border : none;
+}
 #ft {
     text-align: center;
 	bottom : 0;
@@ -25,7 +28,7 @@ body { margin:0;padding:0;}
 }
 
 #logo,#bd {
-	width : 900px;
+	width : 980px;
 	margin: 0 auto;
 	padding: 25px 50px 0 50px;
 }
@@ -55,6 +58,7 @@ body { margin-top : 0; padding-top : 0;}
 	-moz-box-shadow: 0px 0px 10px #888;
 	-webkit-box-shadow: 0px 0px 10px #888;
 	box-shadow: 0px 0px 10px #888;
+	border: solid rgb(0, 117, 159);
 }
 a, a:visited, a:hover, a:active {
 	color : #6493D2;
