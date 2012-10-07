@@ -1,10 +1,5 @@
 package se.crisp.wicket.examples;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.Serializable;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
@@ -13,18 +8,22 @@ import org.apache.wicket.util.tester.WicketTester;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.crisp.wicket.examples.CheckBoxPage;
-import se.crisp.wicket.examples.DropDownPage;
-import se.crisp.wicket.examples.WicketTestExamplesApplication;
+import java.io.Serializable;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 class CheckBoxPageAjaxOverride extends CheckBoxPage implements Serializable {
+    static final String FORGOT_TO_CALL_SET_MARKUP_ID =
+            "You forgot to call setMarkupId(true) on '%s'";
+
     int ajaxCalled = 0;
 
     @Override
     protected void ajaxUpdate(AjaxRequestTarget target, Component comp) {
-    	super.ajaxUpdate(target, comp);
+        super.ajaxUpdate(target, comp);
         ajaxCalled++;
-        String failMessage = String.format("You forgot to call setMarkupId(true) on '%s'", comp.getId());
+        String failMessage = String.format(FORGOT_TO_CALL_SET_MARKUP_ID, comp.getId());
         assertNotNull(failMessage, comp.getMarkupId(false));
     }
 }
@@ -77,19 +76,21 @@ public class CheckBoxPage_UnitTest {
     private FormTester fillInTheForm() {
         FormTester formTester = tester.newFormTester(CheckBoxPage.FORM);
         formTester.setValue(CheckBoxPage.CHECK_BOX, true);
-        tester.executeAjaxEvent(CheckBoxPage.FORM + ":" + CheckBoxPage.CHECK_BOX, CHECKBOX_EVENT);
+        String pathToCheckBox = CheckBoxPage.FORM + ":" + CheckBoxPage.CHECK_BOX;
+        tester.executeAjaxEvent(pathToCheckBox, CHECKBOX_EVENT);
         return formTester;
     }
 
     private String getTheResult() {
-    	tester.assertComponent(CheckBoxPage.MESSAGE, Label.class);
+        tester.assertComponent(CheckBoxPage.MESSAGE, Label.class);
         CheckBoxPage page = (CheckBoxPage) tester.getLastRenderedPage();
         Label label = (Label) page.get(CheckBoxPage.MESSAGE);
         String actualMessage = label.getDefaultModelObjectAsString();
         return actualMessage;
     }
 
-    private void assertOnlyTheMessageIsDisplayed(CheckBoxPageAjaxOverride testPage, String expected, String actual) {
+    private void assertOnlyTheMessageIsDisplayed(CheckBoxPageAjaxOverride testPage,
+                                                 String expected, String actual) {
         assertEquals(expected, actual);
         assertEquals(1, testPage.ajaxCalled);
         tester.assertNoErrorMessage();

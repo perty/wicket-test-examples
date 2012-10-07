@@ -1,29 +1,39 @@
-<html
-	xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<html xmlns:wicket="http://wicket.apache.org">
 <head>
-<title>Check Box Page</title>
+    <title>Check Box Page</title>
+    <link href='http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:regular,bold' rel='stylesheet'
+          type='text/css'/>
+    <link rel="stylesheet" href="style.css" type="text/css" media="screen" title="Stylesheet"/>
 </head>
 <body>
-<div style="width: 512px">
-<h1>Check Box Page</h1>
-<p>This example shows how to test a form with an AJAX enabled check
-box in it. When you click the check box, a greeting is displayed.</p>
-<form action="#" wicket:id="form">
-<fieldset><legend>Check Box Testing</legend><input
-	type="checkbox" wicket:id="checkBox" /> Click the check box! <br />
-<input type="submit" /></fieldset>
-</form>
-<p>Message: <span wicket:id="message">[Message]</span></p>
-<hr/>
-<h2>The Test Code</h2>
-<p>The code illustrates the following, less easy concepts.</p>
-<ol>
-	<li>How to send an AJAX event to the check box</li>
-	<li>How to verify that the message gets updated</li>
-</ol>
-<h3>Sending AJAX Event</h3>
-<p>To simulate that the user clicks the check box, we do <tt>executeAjaxEvent</tt>.
-Here is the code snippet:</p>
+<wicket:extend>
+    <div id="bd">
+        <h1>Check Box Page</h1>
+
+        <p>This example shows how to test a form with an AJAX enabled check
+            box in it. When you click the check box, a greeting is displayed.</p>
+
+        <form action="#" wicket:id="form">
+            <fieldset>
+                <legend>Check Box Testing</legend>
+                <input
+                        type="checkbox" wicket:id="checkBox"/> Click the check box! <br/>
+                <input type="submit" value="Next Page"/></fieldset>
+        </form>
+
+        <p>Message: <span wicket:id="message">[Message]</span></p>
+        <hr/>
+        <h2>The Test Code</h2>
+
+        <p>The code illustrates the following, less easy concepts.</p>
+        <ol>
+            <li>How to send an AJAX event to the check box</li>
+            <li>How to verify that the message gets updated</li>
+        </ol>
+        <h3>Sending AJAX Event</h3>
+
+        <p>To simulate that the user clicks the check box, we do <tt>executeAjaxEvent</tt>.
+            Here is the code snippet:</p>
 <pre>
     // Get this right or get "No AjaEventBehavior found ..."
     static final String CHECKBOX_EVENT = "onclick";
@@ -31,51 +41,63 @@ Here is the code snippet:</p>
     private FormTester fillInTheForm() {
         FormTester formTester = tester.newFormTester(CheckBoxPage.FORM);
         formTester.setValue(CheckBoxPage.CHECK_BOX, true);
-        tester.executeAjaxEvent(CheckBoxPage.FORM + ":" + CheckBoxPage.CHECK_BOX, CHECKBOX_EVENT);
+        String pathToCheckBox = CheckBoxPage.FORM + ":" + CheckBoxPage.CHECK_BOX;
+        tester.executeAjaxEvent(pathToCheckBox, CHECKBOX_EVENT);
         return formTester;
     }
 </pre>
-<p>Note that we do <i>not</i> do a form submit and execute an event in
-the same test case. It seems to stir up unnecessary evil.</p>
+        <p>Note that we do <i>not</i> do a form submit and execute an event in
+            the same test case. It seems to stir up unnecessary evil.</p>
 
-<h3>Verify the Update</h3>
-<p>A mistake that is possible, is to forget to add a component to
-the AJAX request when the component is updated.</p>
-<p>In our example it is the label that should be updated with a
-message when the check box is clicked.</p>
-<p>Unless we do anything to check this, the omission will go
-unnoticed through the test. Here we solve this by putting the AJAX
-update in a protected method in the page class.</p>
-<p>During testing, we subclass the page and override that method. In
-the method, we take the chance to note how many times we are called and
-whether the component added has its mark-up set. The latter is also an
-omission that will go unnoticed until somebody runs the site in a
-browser.</p>
-<p>Here is the code.</p>
+        <h3>Verify the Update</h3>
+
+        <p>A mistake that is possible, is to forget to add a component to
+            the AJAX request when the component is updated.</p>
+
+        <p>In our example it is the label that should be updated with a
+            message when the check box is clicked.</p>
+
+        <p>Unless we do anything to check this, the omission will go
+            unnoticed through the test. Here we solve this by putting the AJAX
+            update in a protected method in the page class.</p>
+
+        <p>During testing, we subclass the page and override that method. In
+            the method, we take the chance to note how many times we are called and
+            whether the component added has its mark-up set. The latter is also an
+            omission that will go unnoticed until somebody runs the site in a
+            browser.</p>
+
+        <p>Here is the code.</p>
 <pre>
 class CheckBoxPageAjaxOverride extends CheckBoxPage implements Serializable {
+    static final String FORGOT_TO_CALL_SET_MARKUP_ID =
+            "You forgot to call setMarkupId(true) on '%s'";
+
     int ajaxCalled = 0;
 
     @Override
     protected void ajaxUpdate(AjaxRequestTarget target, Component comp) {
+    	super.ajaxUpdate(target, comp);
         ajaxCalled++;
-        String failMessage = String.format("You forgot to call setMarkupId(true) on '%s'", comp.getId());
+        String failMessage = String.format(FORGOT_TO_CALL_SET_MARKUP_ID, comp.getId());
         assertNotNull(failMessage, comp.getMarkupId(false));
     }
-}
+
 
 ...
 
-    private void assertOnlyTheMessageIsDisplayed(CheckBoxPageAjaxOverride testPage, String expected, String actual) {
+    private void assertOnlyTheMessageIsDisplayed(CheckBoxPageAjaxOverride testPage,
+                                                 String expected, String actual) {
         assertEquals(expected, actual);
         assertEquals(1, testPage.ajaxCalled);
         tester.assertNoErrorMessage();
     }
 </pre>
-<p>Note that we check that the correct message is displayed, that
-AJAX request was done properly and that there are no error messages. If
-somebody later adds a required field to the page, our test will notice
-that we did not fill in that new field.</p>
-</div>
+        <p>Note that we check that the correct message is displayed, that
+            AJAX request was done properly and that there are no error messages. If
+            somebody later adds a required field to the page, our test will notice
+            that we did not fill in that new field.</p>
+    </div>
+</wicket:extend>
 </body>
 </html>

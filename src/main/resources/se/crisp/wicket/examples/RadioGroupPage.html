@@ -1,41 +1,46 @@
-<html
-	xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<html xmlns:wicket="http://wicket.apache.org">
 <head>
-<title>Radio Group Test Page</title>
+    <title>Radio Group Test Page</title>
 </head>
 <body>
-<div style="width: 512px">
-<h1>Radio Group Test Page</h1>
-<p></p>
-<form action="#" wicket:id="form">
-<fieldset><legend>Radio Group Testing</legend>
-<table wicket:id="radioGroup">
-	<thead>
-		<tr>
-			<th></th>
-			<th>Name</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr wicket:id="radioRepeater">
-			<td><input type="radio" wicket:id="radio" /></td>
-			<td><span wicket:id="radioName"></span></td>
-		</tr>
-	</tbody>
-</table>
-<input type="submit" /></fieldset>
-</form>
-<p>Message: <span wicket:id="message">[Message]</span></p>
-<hr/>
-<p>See also: <a
-	href="http://wicketstuff.org/wicket13/compref/?wicket:bookmarkablePage=:org.apache.wicket.examples.compref.RadioGroupPage">
-http://wicketstuff.org/wicket13/compref/?wicket:bookmarkablePage=:org.apache.wicket.examples.compref.RadioGroupPage
-</a></p>
-<h2>The Code</h2>
-<p>When it comes to radio buttons in Wicket, there are two options,
-either use the simple <tt>RadioChoice</tt> or build it all with a <tt>RadioGroup</tt>
-and <tt>Radio</tt> elements. The latter option also needs a repeater for
-the <tt>Radio</tt> widgets.</p>
+<wicket:extend>
+    <div id="bd">
+        <h1>Radio Group Test Page</h1>
+
+        <p></p>
+
+        <form action="#" wicket:id="form">
+            <fieldset>
+                <legend>Radio Group Testing</legend>
+                <table wicket:id="radioGroup">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr wicket:id="radioRepeater">
+                        <td><input type="radio" wicket:id="radio"/></td>
+                        <td><span wicket:id="radioName"></span></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <input type="submit" value="Next Page"/></fieldset>
+        </form>
+        <p>Message: <span wicket:id="message">[Message]</span></p>
+        <hr/>
+        <p>See also: <a
+                href="http://wicketstuff.org/wicket13/compref/?wicket:bookmarkablePage=:org.apache.wicket.examples.compref.RadioGroupPage">
+            http://wicketstuff.org/wicket13/compref/?wicket:bookmarkablePage=:org.apache.wicket.examples.compref.RadioGroupPage
+        </a></p>
+
+        <h2>The Code</h2>
+
+        <p>When it comes to radio buttons in Wicket, there are two options,
+            either use the simple <tt>RadioChoice</tt> or build it all with a <tt>RadioGroup</tt>
+            and <tt>Radio</tt> elements. The latter option also needs a repeater for
+            the <tt>Radio</tt> widgets.</p>
 <pre>
 &lt;table wicket:id="radioGroup"&gt;
 	&lt;tr wicket:id="radioRepeater"&gt;
@@ -44,10 +49,11 @@ the <tt>Radio</tt> widgets.</p>
 	&lt;/tr&gt;
 &lt;/table&gt;
 </pre>
-<p>Each radio button is connected to an object, as opposed to the
-simpler <tt>RadioChoice</tt>. We use a table where we can put the
-properties of each object on a row.</p>
-<p>Use the same model object for the <tt>Form</tt> as for the <tt>RadioGroup</tt></p>
+        <p>Each radio button is connected to an object, as opposed to the
+            simpler <tt>RadioChoice</tt>. We use a table where we can put the
+            properties of each object on a row.</p>
+
+        <p>Use the same model object for the <tt>Form</tt> as for the <tt>RadioGroup</tt></p>
 <pre>
             RadioGroupFormObject selection = new RadioGroupFormObject();
             PropertyModel&lt;String&gt; <b>model</b> = new PropertyModel&lt;String&gt;(selection, "radio");
@@ -55,14 +61,15 @@ properties of each object on a row.</p>
             setDefaultModel(<b>model</b>);
             final RadioGroup&lt;String&gt; radioGroup = createRadioGroup(<b>model</b>);
 </pre>
-<h2>Test Code</h2>
-<p>The hard part is the testing. The <tt>AjaxFormChoiceComponentUpdatingBehavior</tt>
-does not lend itself to execution from the test environment. Instead we
-have to rely on the <tt>onSelectionChanged</tt> when testing. It is not
-AJAX so the page will be reloaded. Since there is a difference between
-the test environment and the production environment, we must merge the
-logic at earliest possibility. Here we have a method <tt>updateLabel</tt>
-that are called in both cases.</p>
+        <h2>Test Code</h2>
+
+        <p>The hard part is the testing. The <tt>AjaxFormChoiceComponentUpdatingBehavior</tt>
+            does not lend itself to execution from the test environment. Instead we
+            have to rely on the <tt>onSelectionChanged</tt> when testing. It is not
+            AJAX so the page will be reloaded. Since there is a difference between
+            the test environment and the production environment, we must merge the
+            logic at earliest possibility. Here we have a method <tt>updateLabel</tt>
+            that are called in both cases.</p>
 <pre>
 	    new RadioGroup&lt;String&gt;(RADIO_GROUP, model) {
 
@@ -75,7 +82,7 @@ that are called in both cases.</p>
                 protected void onSelectionChanged(Object newSelection) {
                     log.debug("onSelectionChanged: " + newSelection);
                     Object modelObject = getDefaultModelObject();
-                    <b>updateLabel</b>(modelObject);
+                    <b>updateLabel</b>(null, modelObject);
                 }
                 
                 ...
@@ -88,15 +95,16 @@ that are called in both cases.</p>
                 protected void onUpdate(AjaxRequestTarget target) {
                     Object modelObject = getComponent().getDefaultModelObject();
                     log.debug(String.format("onUpdate: %s", modelObject));
-                    <b>updateLabel</b>(modelObject);
+                    <b>updateLabel</b>(target, modelObject);
                 }
             };
         }
 </pre>
-<p>You could of course look up the behavior of the component and
-execute it. However, that seems to set everything to null so we had to
-give that one up.</p>
-<p>Instead, we use the <tt>onSelectionChanged</tt> method.</p>
+        <p>You could of course look up the behavior of the component and
+            execute it. However, that seems to set everything to null so we had to
+            give that one up.</p>
+
+        <p>Instead, we use the <tt>onSelectionChanged</tt> method.</p>
 <pre>
     private void triggerRadioGroupUpdate() {
         String path = RadioGroupPage.FORM + ":" + RadioGroupPage.RADIO_GROUP;
@@ -104,25 +112,27 @@ give that one up.</p>
         rg.onSelectionChanged();
     }
  </pre>
- <p>Thus, we can write test code like this:</p>
+        <p>Thus, we can write test code like this:</p>
  <pre>
     @Test
     public void whenSelectingAnOptionThenDisplayMessage() {
         RadioGroupPageAjaxOverride testPage = createTestPage();
 
-        fillInTheForm();
+        fillInTheForm(CHOICE_2_INDEX);
 
         triggerRadioGroupUpdate();
 
         String actualMessage = getTheResult();
-        assertOnlyTheMessageIsDisplayed(testPage, "choice 2", actualMessage);
+        assertOnlyTheMessageIsDisplayed(testPage, CHOICE_2_MESSAGE, actualMessage);
     }
      
-    private FormTester fillInTheForm() {
+    private FormTester fillInTheForm(int choiceIndex) {
         FormTester formTester = tester.newFormTester(RadioGroupPage.FORM);
-        formTester.select(RadioGroupPage.RADIO_GROUP, 1);
+        formTester.select(RadioGroupPage.RADIO_GROUP, choiceIndex);
         return formTester;
     }
- </pre></div>
+ </pre>
+    </div>
+</wicket:extend>
 </body>
 </html>

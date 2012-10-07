@@ -1,12 +1,11 @@
 package se.crisp.wicket.examples;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.Link;
 
-public class HomePage extends WebPage {
+public class HomePage extends BasePage {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     static final String CHECK_BOX_LINK = "checkBoxPage";
 

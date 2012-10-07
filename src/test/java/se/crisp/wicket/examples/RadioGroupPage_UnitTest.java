@@ -12,31 +12,29 @@ import org.apache.wicket.util.tester.WicketTester;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.crisp.wicket.examples.HomePage;
-import se.crisp.wicket.examples.RadioGroupPage;
-import se.crisp.wicket.examples.WicketTestExamplesApplication;
-
 class RadioGroupPageAjaxOverride extends RadioGroupPage {
 
+    static final String FORGOT_TO_CALL_SET_MARKUP_ID = "You forgot to call setMarkupId(true) on '%s'";
     int ajaxCalled = 0;
 
     @Override
     protected void ajaxUpdate(AjaxRequestTarget target, Component comp) {
     	super.ajaxUpdate(target, comp);
         ajaxCalled++;
-        String failMessage = String.format("You forgot to call setMarkupId(true) on '%s'", comp.getId());
+        String failMessage = String.format(FORGOT_TO_CALL_SET_MARKUP_ID, comp.getId());
         assertNotNull(failMessage, comp.getMarkupId(false));
     }
 }
 
 public class RadioGroupPage_UnitTest {
-    
+
+    static final String CHOICE_2_MESSAGE = "choice 2";
+    static final int CHOICE_2_INDEX = 1;
     private WicketTester tester;
 
     @Before
     public void setUp() {
         tester = new WicketTester(new WicketTestExamplesApplication());
-        tester.setupRequestAndResponse(true);
     }
 
     @Test
@@ -48,28 +46,28 @@ public class RadioGroupPage_UnitTest {
     public void whenSelectingAnOptionThenDisplayMessage() {
         RadioGroupPageAjaxOverride testPage = createTestPage();
 
-        fillInTheForm();
+        fillInTheForm(CHOICE_2_INDEX);
 
         triggerRadioGroupUpdate();
 
         String actualMessage = getTheResult();
-        assertOnlyTheMessageIsDisplayed(testPage, "choice 2", actualMessage);
+        assertOnlyTheMessageIsDisplayed(testPage, CHOICE_2_MESSAGE, actualMessage);
     }
 
     @Test
     public void whenSubmittingThenGoToHomePage() {
         createTestPage();
 
-        FormTester formTester = fillInTheForm();
+        FormTester formTester = fillInTheForm(CHOICE_2_INDEX);
 
         formTester.submit();
 
         tester.assertRenderedPage(HomePage.class);
     }
 
-    private FormTester fillInTheForm() {
+    private FormTester fillInTheForm(int choiceIndex) {
         FormTester formTester = tester.newFormTester(RadioGroupPage.FORM);
-        formTester.select(RadioGroupPage.RADIO_GROUP, 1);
+        formTester.select(RadioGroupPage.RADIO_GROUP, choiceIndex);
         return formTester;
     }
 
@@ -84,8 +82,7 @@ public class RadioGroupPage_UnitTest {
         RadioGroupPage page = (RadioGroupPage) tester.getLastRenderedPage();
         tester.assertComponent(RadioGroupPage.MESSAGE, Label.class);
         Label label = (Label) page.get(RadioGroupPage.MESSAGE);
-        String actualMessage = label.getDefaultModelObjectAsString();
-        return actualMessage;
+        return label.getDefaultModelObjectAsString();
     }
 
     private void assertOnlyTheMessageIsDisplayed(RadioGroupPageAjaxOverride testPage, String expected, String actual) {

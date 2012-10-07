@@ -17,7 +17,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModelComparator;
 import org.apache.wicket.model.PropertyModel;
 
-public class RadioGroupPage extends WebPage {
+public class RadioGroupPage extends BasePage {
 
     static final String FORM = "form";
 
@@ -30,8 +30,6 @@ public class RadioGroupPage extends WebPage {
     static final String RADIO_NAME = "radioName";
 
     static final String MESSAGE = "message";
-
-    static final String RADIO_EVENT = "onClick";
 
     private Label label;
 
@@ -85,7 +83,7 @@ public class RadioGroupPage extends WebPage {
         }
 
         private RadioGroup<String> createRadioGroup(PropertyModel<String> model) {
-            final RadioGroup<String> radioGroup = new RadioGroup<String>(RADIO_GROUP, model) {
+            return new RadioGroup<String>(RADIO_GROUP, model) {
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -113,11 +111,10 @@ public class RadioGroupPage extends WebPage {
                 protected void onSelectionChanged(Object newSelection) {
                     log.debug("onSelectionChanged: " + newSelection);
                     Object modelObject = getDefaultModelObject();
-                    updateLabel(modelObject);
+                    updateLabel(null, modelObject);
                 }
 
             };
-            return radioGroup;
         }
 
         private AjaxFormChoiceComponentUpdatingBehavior createAjaxBehavior() {
@@ -129,21 +126,21 @@ public class RadioGroupPage extends WebPage {
                 protected void onUpdate(AjaxRequestTarget target) {
                     Object modelObject = getComponent().getDefaultModelObject();
                     log.debug(String.format("onUpdate: %s", modelObject));
-                    updateLabel(modelObject);
+                    updateLabel(target, modelObject);
                 }
             };
         }
     }
 
-    private void updateLabel(Object modelObject) {
+    private void updateLabel(AjaxRequestTarget target, Object modelObject) {
         label.setDefaultModelObject(modelObject);
-        ajaxUpdate(AjaxRequestTarget.get(), label);
+        ajaxUpdate(target, label);
     }
 
     protected void ajaxUpdate(AjaxRequestTarget target, Component comp) {
         log.debug("ajax update");
         if (target != null) {
-            target.addComponent(comp);
+            target.add(comp);
         }
     }
 

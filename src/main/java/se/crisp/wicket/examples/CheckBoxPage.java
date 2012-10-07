@@ -1,17 +1,16 @@
 package se.crisp.wicket.examples;
 
-import java.io.Serializable;
-
 import org.apache.log4j.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
-import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.CompoundPropertyModel;
 
-public class CheckBoxPage extends WebPage {
+import java.io.Serializable;
+
+public class CheckBoxPage extends BasePage {
 
     static final String FORM = "form";
 
@@ -62,7 +61,7 @@ public class CheckBoxPage extends WebPage {
     }
 
     protected void ajaxUpdate(AjaxRequestTarget target, Component comp) {
-        target.addComponent(comp);
+        target.add(comp);
     }
 
     public CheckBoxPage() {
